@@ -1,1 +1,14 @@
-<h2>editing</h2>
+<div class="container">
+    <div class="row title">
+        <div class="col-md-6 col-md-offset-3">
+
+            <form ng-submit="taskCtrl.updateTask(taskCtrl.selectedTask)">
+                <input type="text" ng-model="taskCtrl.selectedTask.title" class="form-control" placeholder="Task title" required><br>
+                <textarea ng-model="taskCtrl.selectedTask.description" class="form-control" placeholder="Describe what you need done" required></textarea><br>
+                <input type="number" ng-model="taskCtrl.selectedTask.total" class="form-control" placeholder="How much will you pay?" required><br>
+                <input type="submit" value="Update Task" class="btn btn-info">
+            </form>
+
+        </div>
+    </div>
+</div>

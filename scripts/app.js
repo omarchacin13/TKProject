@@ -3,7 +3,10 @@
 var app = angular
   .module('TaskRabbit', [
     'firebase',
-    'ui.router'
+    'ui.router',
+    'ngAnimate',
+    'ngResource',
+    'toaster'
   ])
   .constant('FURL', 'https://trproject.firebaseio.com/')
   .config(function ($stateProvider, $urlRouterProvider) {
@@ -13,6 +16,16 @@ var app = angular
         url: "/",
         templateUrl: "views/main.html"
       })
+      .state('login', {
+        url: "/login",
+        templateUrl: "views/login.html",
+        controller: 'AuthController as authCtrl'
+      })
+      .state('register', {
+        url: "/register",
+        templateUrl: "views/register.html",
+        controller: 'AuthController as authCtrl'
+      })
       .state('post', {
         url: "/post",
         templateUrl: "views/post.html",
@@ -20,7 +33,11 @@ var app = angular
       })
       .state('edit', {
         url: "/edit",
-        templateUrl: "views/edit.html"
+        templateUrl: "views/edit.html",
+        controller: "TaskController as taskCtrl",
+        params: {
+          taskId: null
+        }
       })
       .state('browse', {
         url: "/browse",
