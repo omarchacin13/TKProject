@@ -1,19 +1,30 @@
 'use strict';
 
 var app = angular
-  .module('TaskNinjaApp', [
-    'ngAnimate',
-    'ngResource',    
-    'ngRoute',    
-    'firebase'
+  .module('TaskRabbit', [
+    'firebase',
+    'ui.router'
   ])
-  .constant('FURL', 'https://your-firebase.firebaseio.com/')  
-  .config(function ($routeProvider) {
-    $routeProvider      
-      .when('/', {
-        templateUrl: 'views/main.html'        
+  .constant('FURL', 'https://trproject.firebaseio.com/')
+  .config(function ($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise("/");
+    $stateProvider
+      .state('/', {
+        url: "/",
+        templateUrl: "views/main.html"
       })
-      .otherwise({
-        redirectTo: '/'
-      });
+      .state('post', {
+        url: "/post",
+        templateUrl: "views/post.html",
+        controller: 'TaskController as taskCtrl'
+      })
+      .state('edit', {
+        url: "/edit",
+        templateUrl: "views/edit.html"
+      })
+      .state('browse', {
+        url: "/browse",
+        templateUrl: "views/browse.html",
+        controller: 'TaskController as taskCtrl'
+      })
   });
