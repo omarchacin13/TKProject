@@ -8,7 +8,7 @@ var app = angular
     'ngResource',
     'toaster'
   ])
-  .constant('FURL', 'https://trproject.firebaseio.com/')
+  .constant('FURL', 'https://tr-project.firebaseio.com/')
   .config(function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise("/");
     $stateProvider

@@ -7,7 +7,7 @@ angular.module('TaskRabbit').factory('Auth', function (FURL, $firebaseAuth, $fir
     user: {},
 
     createProfile: function (data, user) {
-      ref.child("users").child(data.uid).set({
+      ref.child("profile").child(data.uid).set({
         provider     : data.provider,
         id           : data.uid,
         name         : user.name,
@@ -66,7 +66,7 @@ angular.module('TaskRabbit').factory('Auth', function (FURL, $firebaseAuth, $fir
   auth.$onAuth(function (authData) {
       if (authData) {
           angular.copy(authData, Auth.user);
-          Auth.user.profile = $firebaseObject(ref.child("users").child(authData.uid));
+          Auth.user.profile = $firebaseObject(ref.child("profile").child(authData.uid));
           console.log('Auth.user ', Auth.user.profile);
       } else {
         if (Auth.user && Auth.user.profile) {
