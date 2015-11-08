@@ -16,14 +16,6 @@ angular.module('TaskRabbit').factory('Auth', function (FURL, $firebaseAuth, $fir
         registered_in: Date()
       });
 
-      /*var profileRef = $firebaseArray(ref.child('profile'));
-      console.log('profile ref ', profileRef);
-      return profileRef.$add(profile).then(function (ref) {
-        var id            = ref.key();
-        $rootScope.idUser = id;
-        console.log("added record with id " + id);
-        profileRef.$indexFor(id); // returns location in the array
-      });*/
     },
 
     login: function (user) {
@@ -35,11 +27,9 @@ angular.module('TaskRabbit').factory('Auth', function (FURL, $firebaseAuth, $fir
     register: function (user) {
       return auth.$createUser({email: user.email, password: user.password})
         .then(function () {
-          // authenticate so we have permission to write to Firebase
           return Auth.login(user);
         })
         .then(function (data) {
-          // store user data in Firebase after creating account
           return Auth.createProfile(data, user);
         });
     },
@@ -76,16 +66,8 @@ angular.module('TaskRabbit').factory('Auth', function (FURL, $firebaseAuth, $fir
   auth.$onAuth(function (authData) {
       if (authData) {
           angular.copy(authData, Auth.user);
-          /*ref.child("users").child(authData.uid).set({
-            provider     : authData.provider,
-            id           : authData.uid,
-            name         : getName(authData),
-            email        : authData.password.email,
-            gravatar     : get_gravatar(authData.password.email, 40),
-            registered_in: Date()
-          });*/
           Auth.user.profile = $firebaseObject(ref.child("users").child(authData.uid));
-          console.log('Auth.user REAL', Auth.user.profile);
+          console.log('Auth.user ', Auth.user.profile);
       } else {
         if (Auth.user && Auth.user.profile) {
           Auth.user.profile.$destroy();
@@ -95,18 +77,6 @@ angular.module('TaskRabbit').factory('Auth', function (FURL, $firebaseAuth, $fir
       }
     }
   );
-
-  // find a suitable name based on the meta info given by each provider
-  function getName(authData) {
-    switch (authData.provider) {
-      case 'password':
-        return authData.password.email.replace(/@.*/, '');
-      case 'twitter':
-        return authData.twitter.displayName;
-      case 'facebook':
-        return authData.facebook.displayName;
-    }
-  }
 
   function get_gravatar(email, size) {
 
