@@ -37,10 +37,9 @@ function AuthController($scope,
   }
 
   $scope.login = function (user) {
-
     Auth.login(user)
-      .then(function () {
-        console.log('success', "Logged in successfully");
+      .then(function (data) {
+        console.log('success', "Logged in successfully ", data);
         $state.go('/')
       }, function (err) {
         console.log('error', "Oops! Something went wrong.");

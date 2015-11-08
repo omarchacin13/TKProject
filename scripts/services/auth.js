@@ -1,91 +1,118 @@
-angular.module('TaskRabbit').factory('Auth', function(FURL, $firebaseAuth, $firebaseArray, $firebaseObject) {
+angular.module('TaskRabbit').factory('Auth', function (FURL, $firebaseAuth, $firebaseArray, $firebaseObject, $firebase, $rootScope, $timeout) {
 
-  var ref = new Firebase(FURL);
+  var ref  = new Firebase(FURL);
   var auth = $firebaseAuth(ref);
 
   var Auth = {
     user: {},
 
-    createProfile: function(uid, user) {
-      var profile = {
-        name: user.name,
-        id: uid,
-        email: user.email,
-        gravatar: get_gravatar(user.email, 40),
+    createProfile: function (data, user) {
+      ref.child("users").child(data.uid).set({
+        provider     : data.provider,
+        id           : data.uid,
+        name         : user.name,
+        email        : user.email,
+        gravatar     : get_gravatar(user.email, 40),
         registered_in: Date()
-      };
-
-      var profileRef = $firebaseArray(ref.child('profile'));
-      return profileRef.$add(profile).then(function(ref) {
-        var id = ref.key();
-        //console.log("added record with id " + id);
-        profileRef.$indexFor(id); // returns location in the array
       });
+
+      /*var profileRef = $firebaseArray(ref.child('profile'));
+      console.log('profile ref ', profileRef);
+      return profileRef.$add(profile).then(function (ref) {
+        var id            = ref.key();
+        $rootScope.idUser = id;
+        console.log("added record with id " + id);
+        profileRef.$indexFor(id); // returns location in the array
+      });*/
     },
 
-    login: function(user) {
+    login: function (user) {
       return auth.$authWithPassword(
         {email: user.email, password: user.password}
       );
     },
 
-    register: function(user) {
+    register: function (user) {
       return auth.$createUser({email: user.email, password: user.password})
-        .then(function() {
+        .then(function () {
           // authenticate so we have permission to write to Firebase
           return Auth.login(user);
         })
-        .then(function(data) {
+        .then(function (data) {
           // store user data in Firebase after creating account
-          console.log("datos del usuario:" + JSON.stringify(data));
-          return Auth.createProfile(data.uid, user);
+          return Auth.createProfile(data, user);
         });
     },
 
-    logout: function() {
+    logout: function () {
       auth.$unauth();
       console.log("Usuario Sale.");
     },
 
-    resetpassword: function(user) {
+    resetpassword: function (user) {
       return auth.$resetPassword({
         email: user.email
-      }).then(function() {
+      }).then(function () {
         console.log("Password reset email sent successfully!");
-      }).catch(function(error) {
+      }).catch(function (error) {
         console.error("Error: ", error.message);
       });
     },
 
-    changePassword: function(user) {
-      return auth.$changePassword({email: user.email, oldPassword: user.oldPass, newPassword: user.newPass});
+    changePassword: function (user) {
+      return auth.$changePassword({
+        email      : user.email,
+        oldPassword: user.oldPass,
+        newPassword: user.newPass
+      });
     },
 
-    signedIn: function() {
+    signedIn: function () {
       return !!Auth.user.provider; //using !! means (0, undefined, null, etc) = false | otherwise = true
     }
   };
 
-  auth.$onAuth(function(authData) {
-    if(authData) {
-      angular.copy(authData, Auth.user);
-      Auth.user.profile = $firebaseObject(ref.child('profile').child(authData.uid));
 
-    } else {
-      if(Auth.user && Auth.user.profile) {
-        Auth.user.profile.$destroy();
+  auth.$onAuth(function (authData) {
+      if (authData) {
+          angular.copy(authData, Auth.user);
+          /*ref.child("users").child(authData.uid).set({
+            provider     : authData.provider,
+            id           : authData.uid,
+            name         : getName(authData),
+            email        : authData.password.email,
+            gravatar     : get_gravatar(authData.password.email, 40),
+            registered_in: Date()
+          });*/
+          Auth.user.profile = $firebaseObject(ref.child("users").child(authData.uid));
+          console.log('Auth.user REAL', Auth.user.profile);
+      } else {
+        if (Auth.user && Auth.user.profile) {
+          Auth.user.profile.$destroy();
+        }
 
+        angular.copy({}, Auth.user);
       }
-
-      angular.copy({}, Auth.user);
     }
-  });
+  );
+
+  // find a suitable name based on the meta info given by each provider
+  function getName(authData) {
+    switch (authData.provider) {
+      case 'password':
+        return authData.password.email.replace(/@.*/, '');
+      case 'twitter':
+        return authData.twitter.displayName;
+      case 'facebook':
+        return authData.facebook.displayName;
+    }
+  }
 
   function get_gravatar(email, size) {
 
     email = email.toLowerCase();
 
-    var MD5 = function(s) {
+    var MD5 = function (s) {
       function L(k, d) {
         return (k << d) | (k >>> (32 - d))
       }
@@ -149,22 +176,22 @@ angular.module('TaskRabbit').factory('Auth', function(FURL, $firebaseAuth, $fire
 
       function e(G) {
         var Z;
-        var F = G.length;
-        var x = F + 8;
-        var k = (x - (x % 64)) / 64;
-        var I = (k + 1) * 16;
+        var F  = G.length;
+        var x  = F + 8;
+        var k  = (x - (x % 64)) / 64;
+        var I  = (k + 1) * 16;
         var aa = Array(I - 1);
-        var d = 0;
-        var H = 0;
+        var d  = 0;
+        var H  = 0;
         while (H < F) {
-          Z = (H - (H % 4)) / 4;
-          d = (H % 4) * 8;
+          Z     = (H - (H % 4)) / 4;
+          d     = (H % 4) * 8;
           aa[Z] = (aa[Z] | (G.charCodeAt(H) << d));
           H++
         }
-        Z = (H - (H % 4)) / 4;
-        d = (H % 4) * 8;
-        aa[Z] = aa[Z] | (128 << d);
+        Z         = (H - (H % 4)) / 4;
+        d         = (H % 4) * 8;
+        aa[Z]     = aa[Z] | (128 << d);
         aa[I - 2] = F << 3;
         aa[I - 1] = F >>> 29;
         return aa
@@ -183,7 +210,7 @@ angular.module('TaskRabbit').factory('Auth', function(FURL, $firebaseAuth, $fire
       }
 
       function J(k) {
-        k = k.replace(/rn/g, "n");
+        k     = k.replace(/rn/g, "n");
         var d = "";
         for (var F = 0; F < k.length; F++) {
           var x = k.charCodeAt(F);
@@ -202,6 +229,7 @@ angular.module('TaskRabbit').factory('Auth', function(FURL, $firebaseAuth, $fire
         }
         return d
       }
+
       var C = Array();
       var P, h, E, v, g, Y, X, W, V;
       var S = 7,
@@ -220,12 +248,12 @@ angular.module('TaskRabbit').factory('Auth', function(FURL, $firebaseAuth, $fire
           T = 10,
           R = 15,
           O = 21;
-      s = J(s);
-      C = e(s);
-      Y = 1732584193;
-      X = 4023233417;
-      W = 2562383102;
-      V = 271733878;
+      s     = J(s);
+      C     = e(s);
+      Y     = 1732584193;
+      X     = 4023233417;
+      W     = 2562383102;
+      V     = 271733878;
       for (P = 0; P < C.length; P += 16) {
         h = Y;
         E = X;
