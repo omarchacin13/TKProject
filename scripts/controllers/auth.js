@@ -26,6 +26,9 @@ function AuthController($scope,
   ////////////////
 
   function activate() {
+    if (Auth.signedIn()) {
+      $state.go('/')
+    }
   }
 
   function register(user) {

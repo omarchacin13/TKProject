@@ -4,24 +4,45 @@ angular
 
 TaskController.$inject = [
   '$scope',
-  'FURL',
-  '$firebaseArray',
-  '$firebaseObject',
   '$state',
   '$stateParams',
-  'toaster'
+  'toaster',
+  'Task',
+  'Auth'
 ];
 
 /* @ngInject */
 function TaskController($scope,
-                        FURL,
-                        $firebaseArray,
-                        $firebaseObject,
                         $state,
                         $stateParams,
-                        toaster) {
+                        toaster,
+                        Task,
+                        Auth) {
 
-  /* jshint validthis: true */
+
+
+
+  $scope.createTask = function() {
+    $scope.task.status = 'open';
+    $scope.task.gravatar = Auth.user.profile.gravatar;
+    $scope.task.name = Auth.user.profile.name;
+    $scope.task.poster = Auth.user.uid;
+
+    Task.createTask($scope.task).then(function(ref) {
+      toaster.pop('success', 'Task created successfully.');
+      $scope.task = {title: '', description: '', total: '', status: 'open', gravatar: '', name: '', poster: ''};
+      $state.go('/browse/' + ref.key());
+    });
+  };
+
+  $scope.editTask = function(task) {
+    Task.editTask(task).then(function() {
+      toaster.pop('success', "Task is updated.");
+    });
+  };
+
+
+  /*/!* jshint validthis: true *!/
   var vm      = this;
   var taskId  = $stateParams.taskId;
   var ref     = new Firebase(FURL);
@@ -63,7 +84,7 @@ function TaskController($scope,
     vm.selectedTask.$save(task);
     toaster.pop('success', "Task is updated");
     $state.go('browse');
-  }
+  }*/
 
 
 }

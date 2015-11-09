@@ -6,15 +6,17 @@ var app = angular
     'ui.router',
     'ngAnimate',
     'ngResource',
-    'toaster'
+    'toaster',
+    'angularMoment'
   ])
   .constant('FURL', 'https://tr-project.firebaseio.com/')
   .config(function ($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise("/");
+    $urlRouterProvider.otherwise("browse");
     $stateProvider
       .state('/', {
         url: "/",
-        templateUrl: "views/main.html"
+        templateUrl: "views/browse.html",
+        controller: "BrowseController"
       })
       .state('login', {
         url: "/login",
@@ -26,22 +28,13 @@ var app = angular
         templateUrl: "views/register.html",
         controller: 'AuthController as authCtrl'
       })
-      .state('post', {
-        url: "/post",
-        templateUrl: "views/post.html",
-        controller: 'TaskController as taskCtrl'
-      })
-      .state('edit', {
-        url: "/edit",
-        templateUrl: "views/edit.html",
-        controller: "TaskController as taskCtrl",
+      .state('browse', {
+        url: "/browse/:taskId",
+        templateUrl: "views/browse.html",
+        controller: "BrowseController",
+        /*controller: 'TaskController as taskCtrl',*/
         params: {
           taskId: null
         }
-      })
-      .state('browse', {
-        url: "/browse",
-        templateUrl: "views/browse.html",
-        controller: 'TaskController as taskCtrl'
       })
   });
