@@ -8,7 +8,8 @@ TaskController.$inject = [
   '$firebaseArray',
   '$firebaseObject',
   '$state',
-  '$stateParams'
+  '$stateParams',
+  'toaster'
 ];
 
 /* @ngInject */
@@ -17,24 +18,24 @@ function TaskController($scope,
                         $firebaseArray,
                         $firebaseObject,
                         $state,
-                        $stateParams) {
+                        $stateParams,
+                        toaster) {
 
   /* jshint validthis: true */
   var vm      = this;
-  var taskId = $stateParams.taskId;
+  var taskId  = $stateParams.taskId;
   var ref     = new Firebase(FURL);
   var fbTasks = $firebaseArray(ref.child('tasks'));
 
-  vm.tasks = fbTasks;
-  vm.activate = activate;
-  vm.postTask = postTask;
+  vm.tasks      = fbTasks;
+  vm.activate   = activate;
+  vm.postTask   = postTask;
   vm.updateTask = updateTask;
 
   fbTasks.$loaded()
-    .then(function(data) {
-      console.log('length  ', data.length);
+    .then(function (data) {
+      //Load the data here
     });
-
 
 
   activate();
@@ -54,14 +55,15 @@ function TaskController($scope,
 
   function postTask(task) {
     fbTasks.$add(task);
+    toaster.pop('success', "Task created");
     $state.go('browse')
   }
-  
+
   function updateTask(task) {
     vm.selectedTask.$save(task);
+    toaster.pop('success', "Task is updated");
     $state.go('browse');
   }
-  
 
 
 }

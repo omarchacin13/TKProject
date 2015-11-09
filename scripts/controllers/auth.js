@@ -5,13 +5,15 @@ angular
 AuthController.$inject = [
   '$scope',
   '$state',
-  'Auth'
+  'Auth',
+  'toaster'
 ];
 
 /* @ngInject */
 function AuthController($scope,
                         $state,
-                        Auth) {
+                        Auth,
+                        toaster) {
   /* jshint validthis: true */
   var vm = this;
 
@@ -29,10 +31,10 @@ function AuthController($scope,
   function register(user) {
     Auth.register(user)
       .then(function () {
-        console.log('Register successfully ');
+        toaster.pop('success', "Register successfully");
         $state.go('/')
       }, function (error) {
-        console.log('error ', error);
+        toaster.pop('error', "Oppps... Something went wrong");
       });
   }
 
