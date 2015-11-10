@@ -11,7 +11,7 @@ var app = angular
   ])
   .constant('FURL', 'https://tr-project.firebaseio.com/')
   .config(function ($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise("browse");
+    $urlRouterProvider.otherwise("/");
     $stateProvider
       .state('/', {
         url: "/",

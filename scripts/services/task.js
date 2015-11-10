@@ -31,11 +31,26 @@ function Task(FURL, $firebaseArray, $firebaseObject, Auth, $q) {
     editTask: function (task) {
       console.log('Editing ', task);
       var t = this.getTask(task.$id);
-      return t.$save({title: task.title, description: task.description, total: task.total});
+      console.log('t ', t);
+      /*return t.$save({title: task.title, description: task.description, total: task.total});*/ // it should be this
+      ref.child('tasks').child(task.$id).set({
+        //TODO: Fix this
+        /*datetime: t.datetime,
+         description: t.description,
+         gravatar: t.gravatar,
+         name: t.name,
+         poster: t.poster,
+         status: t.status,
+         title: t.title,
+         total: t.total*/
+        title      : task.title,
+        description: task.description,
+        total      : task.total,
+      });
     },
 
     cancelTask: function (taskId) {
-      var d = $q.defer()
+      var d = $q.defer();
       var t = this.getTask(taskId);
       console.log('t  ', t);
       ref.child('tasks').child(taskId).set({

@@ -36,6 +36,7 @@ function TaskController($scope,
   };
 
   $scope.editTask = function(task) {
+    console.log('task in controller ', task);
     Task.editTask(task).then(function() {
       toaster.pop('success', "Task is updated.");
     });

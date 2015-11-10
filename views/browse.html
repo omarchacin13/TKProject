@@ -15,7 +15,7 @@
                 </div>
 
                 <!-- TASK LIST -->
-                <a ng-repeat="task in tasks | filter: {title: searchTask, status: '!cancelled' }| orderBy: 'datetime':true" ng-click="test(task)"
+                <a ng-repeat="task in tasks | filter: {title: searchTask, status: '!cancelled' }| orderBy: 'datetime':true"
                    ui-sref="browse({taskId: task.$id})">
                     <div class="list-group-item">
                         <div class="row-picture">
@@ -72,7 +72,8 @@
                                         <li><a href="" data-toggle="modal" data-target="#ediModal">EDIT
                                             TASK</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="" ng-click="cancelTask(selectedTask.$id)">CANCEL TASK</a></li>
+                                        <li><a href="" ng-click="cancelTask(selectedTask.$id)">CANCEL
+                                            TASK</a></li>
                                     </ul>
                                 </div>
                             </div>
