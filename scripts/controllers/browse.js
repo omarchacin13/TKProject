@@ -9,7 +9,8 @@ BrowseController.$inject = [
   '$firebaseArray',
   '$firebaseObject',
   'Task',
-  'Auth'];
+  'Auth',
+  'Comment'];
 
 /* @ngInject */
 function BrowseController($scope,
@@ -18,7 +19,8 @@ function BrowseController($scope,
                           $firebaseArray,
                           $firebaseObject,
                           Task,
-                          Auth) {
+                          Auth,
+                          Comment) {
   /* jshint validthis: true */
   var vm = this;
 
@@ -32,22 +34,15 @@ function BrowseController($scope,
   function activate() {
   }
 
-
+  $scope.user = Auth.user;
   $scope.searchTask = '';
   $scope.tasks      = Task.all;
-  console.log('taks ', Task.test);
-
-
   $scope.signedIn = Auth.signedIn;
-
   $scope.listMode = true;
-  console.log('stateParams ', $stateParams.taskId);
 
 
   if ($stateParams.taskId) {
-    console.log('Tasks ', Task);
     var task        = Task.getTask($stateParams.taskId);
-    console.log('task object ', task);
     $scope.listMode = false;
 
     setSelectedTask(task);
@@ -60,10 +55,11 @@ function BrowseController($scope,
     if ($scope.signedIn()) {
       // Check if the current login user is the creator of selected task
       $scope.isTaskCreator = Task.isCreator;
-
       // Check if the selectedTask is open
       $scope.isOpen = Task.isOpen;
     }
+
+    $scope.comments = Comment.comments(task.$id)
   };
 
   // --------------- TASK ---------------
@@ -74,6 +70,19 @@ function BrowseController($scope,
       toaster.pop('success', "This task is cancelled successfully.");
     });
   };
+
+  $scope.addComment = function () {
+    var comment = {
+      content: $scope.content,
+      name: $scope.user.profile.name,
+      gravatar: $scope.user.profile.gravatar
+    };
+
+    Comment.addComment($scope.selectedTask.$id, comment)
+      .then(function() {
+          $scope.content = '';
+      });
+  }
 
 
 }

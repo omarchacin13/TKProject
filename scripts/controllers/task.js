@@ -37,12 +37,11 @@ function TaskController($scope,
         name       : '',
         poster     : ''
       };
-      $state.go('/browse/' + ref.key());
+      $state.go('browse', { taskId: ref.key()});
     });
   };
 
   $scope.editTask = function (task) {
-    console.log('task in controller ', task);
     Task.editTask(task).then(function () {
       toaster.pop('success', "Task is updated.");
     }), function (error) {
