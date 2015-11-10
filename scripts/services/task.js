@@ -24,41 +24,28 @@ function Task(FURL, $firebaseArray, $firebaseObject, Auth, $q) {
 
     createTask: function (task) {
       task.datetime = Firebase.ServerValue.TIMESTAMP;
-      console.log('Creating ', task);
       return tasks.$add(task);
     },
 
     editTask: function (task) {
-      console.log('Editing ', task);
-      var t = this.getTask(task.$id);
-      console.log('t ', t);
+      var d         = $q.defer();
+      var t         = this.getTask(task.$id);
       task.datetime = Firebase.ServerValue.TIMESTAMP;
-      /*return t.$save({title: task.title, description: task.description, total: task.total});*/ // it should be this
-      return ref.child('tasks').child(task.$id).set({
-        datetime: task.datetime,
-        description: task.description,
-        gravatar: task.gravatar,
-        name: task.name,
-        poster: task.poster,
-        status: task.status,
-        title: task.title,
-        total: task.total,
-        datetime: Firebase.ServerValue.TIMESTAMP
-      })
-      /*ref.child('tasks').child(task.$id).set({
-        //TODO: Fix this
-        /!*datetime: t.datetime,
-         description: t.description,
-         gravatar: t.gravatar,
-         name: t.name,
-         poster: t.poster,
-         status: t.status,
-         title: t.title,
-         total: t.total*!/
+      /*return t.$save({title: task.title, description: task.description, total: task.total}); // it should be this*/
+      ref.child('tasks').child(task.$id).update({
+        datetime   : task.datetime,
         title      : task.title,
         description: task.description,
-        total      : task.total,
-      });*/
+        total      : task.total
+      }, function (error) {
+        if (error) {
+          d.reject(error)
+        } else {
+          d.resolve()
+        }
+      });
+
+      return d.promise
     },
 
     cancelTask: function (taskId) {
@@ -67,15 +54,7 @@ function Task(FURL, $firebaseArray, $firebaseObject, Auth, $q) {
       console.log('t  ', t);
       ref.child('tasks').child(taskId).set({
         //TODO: Fix this
-        /*datetime: t.datetime,
-         description: t.description,
-         gravatar: t.gravatar,
-         name: t.name,
-         poster: t.poster,
-         status: t.status,
-         title: t.title,
-         total: t.total*/
-        status: "Cancelled"
+        status: "cancelled"
       });
       d.resolve();
       return d.promise;
