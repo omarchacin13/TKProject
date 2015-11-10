@@ -32,21 +32,33 @@ function Task(FURL, $firebaseArray, $firebaseObject, Auth, $q) {
       console.log('Editing ', task);
       var t = this.getTask(task.$id);
       console.log('t ', t);
+      task.datetime = Firebase.ServerValue.TIMESTAMP;
       /*return t.$save({title: task.title, description: task.description, total: task.total});*/ // it should be this
-      ref.child('tasks').child(task.$id).set({
+      return ref.child('tasks').child(task.$id).set({
+        datetime: task.datetime,
+        description: task.description,
+        gravatar: task.gravatar,
+        name: task.name,
+        poster: task.poster,
+        status: task.status,
+        title: task.title,
+        total: task.total,
+        datetime: Firebase.ServerValue.TIMESTAMP
+      })
+      /*ref.child('tasks').child(task.$id).set({
         //TODO: Fix this
-        /*datetime: t.datetime,
+        /!*datetime: t.datetime,
          description: t.description,
          gravatar: t.gravatar,
          name: t.name,
          poster: t.poster,
          status: t.status,
          title: t.title,
-         total: t.total*/
+         total: t.total*!/
         title      : task.title,
         description: task.description,
         total      : task.total,
-      });
+      });*/
     },
 
     cancelTask: function (taskId) {
