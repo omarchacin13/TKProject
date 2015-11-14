@@ -65,6 +65,9 @@ function BrowseController($scope,
       $scope.isTaskCreator = Task.isCreator;
       // Check if the selectedTask is open
       $scope.isOpen = Task.isOpen;
+      $scope.isOfferMaker = Offer.isMaker;
+
+      console.log('isOfferedMaker ', Offer.isMaker);
     }
 
     $scope.comments = Comment.comments(task.$id);
@@ -109,6 +112,15 @@ function BrowseController($scope,
         $scope.total          = '';
         $scope.block          = true;
         $scope.alreadyOffered = true;
+      });
+  };
+
+  $scope.cancelOffer = function (offerId) {
+    Offer.cancelOffer($scope.selectedTask.$id, offerId)
+      .then(function() {
+        toaster.pop('success', "Your offer has been cancelled");
+        $scope.alreadyOffered = false;
+        $scope.block = false;
       });
   }
 
